@@ -6,40 +6,16 @@ import { Container } from '@mantine/core';
 import { Text } from '@mantine/core';
 import { Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
+import  axios from 'axios'
 
-const users = [
-    {
-      name: 'John',
-      phone: '555-555-5555',
-    },
-    {
-      name: 'Jane',
-      phone: '555-555-5555',
-    },
-    {
-      name: 'Jack',
-      phone: '555-555-5555',
-    },
-    {
-      name: 'Jill',
-      phone: '555-555-5555',
-    },
-    {
-      name: 'Jones',
-      phone: '555-555-5555'
-    },
-  ]
-  function UserCard({name, phone}) {
+
+  function UserCard({name, email}) {
     return (
       <Card shadow="sm" padding="lg" radius="md" withBorder >
         <Group>
           <Stack spacimg={0}>
-          <Text size='sm' color='grey'>Nome</Text>
           <Text size='md'>{name}</Text>
-          </Stack>
-          <Stack spacimg={0}>
-          <Text size='sm' color='grey'>Número de telefone</Text>
-          <Text size='md'>{phone}</Text>
+          <Text size='sm' c="grey">{email}</Text>
           </Stack>
         </Group>
       </Card>
@@ -47,23 +23,43 @@ const users = [
   }
 
 function Home() {
+
     const [color] = useState("#f1f3f5")
+    const [users, setUsers] = useState([])
+    
+    const loadUsers = async () => {
+      try {
+        const resp = await axios.get('http://localhost:3000/users', { crossDomain: true })
+          setUsers(resp.data.users)
+        
+      } catch(err) {
+          console.error(err);
+      }
+  };
+    useEffect(() => {
+      if(users.length === 0){
+        loadUsers()
+
+      }
+  }, [users])
     useEffect(() => {
         document.body.style.backgroundColor = color
     }, [color])
-    const getusers = users
-    console.log(getusers)
+  
     return(
         
       
       <Container p='md'>
       <Group justify="space-between" mb='md'>
-        <Title order={1}>Lista de usuarios </Title>
-        <Button variant="filled" href='/new' component='a' color="green" radius='xl' size='sm'>Adicionar</Button>
+        <Stack gap='xs'>
+          <Title order={1}>Usuários </Title>
+          <Text Text size='xs' c='gray'>Adicione, remova e edite usuários</Text>
+        </Stack>
+        <Button variant="filled" href='/new' component='a' color="green" radius='xl' size='md'>Adicionar</Button>
       </Group>
       <Stack spacing='md'> 
       {
-        getusers.map(user => <UserCard key={user.name} name={user.name} phone={user.phone} />) 
+        users.map(user => <UserCard key={user.id} name={user.name} email={user.email} />) 
       }
       </Stack>
       </Container>

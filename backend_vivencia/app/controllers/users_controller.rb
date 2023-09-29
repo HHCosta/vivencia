@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     def index
-        users = User.all.select(:id, :name, :email)
+        users = User.all.select(:id, :name,:number, :email)
         render json: {users: users} 
     end
     def destroy
